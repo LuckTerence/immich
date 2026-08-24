@@ -121,7 +121,7 @@ class ServiceMocks {
   final tag = TagServiceStub(MockTagService());
   final backgroundSync = MockBackgroundSyncManager();
   final upload = MockForegroundUploadService();
-  final cast = MockGCastService();
+  final cast = MockCastService();
   final serverInfo = MockServerInfoService();
   final toast = MockToastService();
 
@@ -150,6 +150,11 @@ class ServiceMocks {
     _stubTagService();
     _stubBackgroundSync();
     _stubForegroundUpload();
+    _stubCastService();
+  }
+
+  void _stubCastService() {
+    when(() => cast.discovery).thenAnswer((_) => const Stream.empty());
   }
 
   void _stubUserService() {
