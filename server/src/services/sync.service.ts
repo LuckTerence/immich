@@ -248,11 +248,13 @@ export class SyncService extends BaseService {
   private async syncAuthUsersV1(options: SyncQueryOptions, response: Writable, checkpointMap: CheckpointMap) {
     const upsertType = SyncEntityType.AuthUserV1;
     const upserts = this.syncRepository.authUser.getUpserts({ ...options, ack: checkpointMap[upsertType] });
-    for await (const { updateId, profileImagePath, ...data } of upserts) {
+    for await (const { updateId, profileImagePath, oauthId, ...data } of upserts) {
       await send(response, {
         type: upsertType,
         ids: [updateId],
-        data: { ...data, hasProfileImage: !!profileImagePath },
+        // Mobile clients expect a string; the column is nullable since the
+        // empty-string-to-null migration, so coerce for the wire format.
+        data: { ...data, oauthId: oauthId ?? '', hasProfileImage: !!profileImagePath },
       });
     }
   }
